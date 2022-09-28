@@ -2,6 +2,7 @@ package com.demo.sse.server.config;
 
 import com.demo.sse.server.model.Grade;
 import com.demo.sse.server.model.Office;
+import com.demo.sse.server.model.Room;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
@@ -34,9 +35,10 @@ public class ChangeStream implements ApplicationListener<ApplicationReadyEvent> 
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        MongoDatabase db = mongoClient.getDatabase("registration");
-        MongoCollection<Grade> grades = db.getCollection("grades", Grade.class);
-        MongoCollection<Office> offices = db.getCollection("offices", Office.class);
+//        MongoDatabase db = mongoClient.getDatabase("registration");
+//        MongoCollection<Grade> grades = db.getCollection("grades", Grade.class);
+//        MongoCollection<Office> offices = db.getCollection("offices", Office.class);
+//        MongoCollection<Room> rooms = db.getCollection("rooms", Room.class);
         List<Bson> pipeline;
 
         // Only uncomment one example at a time. Follow instructions for each individually then kill all remaining processes.
@@ -44,8 +46,9 @@ public class ChangeStream implements ApplicationListener<ApplicationReadyEvent> 
         /** => Example 1: print all the write operations.
          *  => Start "ChangeStreams" then "MappingPOJOs" to see some change events.
          */
-        grades.watch().forEach(printEventGrade());
-        offices.watch().forEach(printEventOffice());
+//        grades.watch().forEach(printEventGrade());
+//        offices.watch().forEach(printEventOffice());
+//        rooms.watch().forEach(printEventRoom());
 
         /** => Example 2: print only insert and delete operations.
          *  => Start "ChangeStreams" then "MappingPOJOs" to see some change events.
@@ -77,6 +80,7 @@ public class ChangeStream implements ApplicationListener<ApplicationReadyEvent> 
     private Consumer<ChangeStreamDocument<Grade>> printEventGrade() {
         return System.out::println;
     }
+    private Consumer<ChangeStreamDocument<Room>> printEventRoom() { return System.out::println; }
 
     private void change1() {
         ConnectionString connectionString = new ConnectionString("mongodb://root:password123@localhost:27020/registration?authSource=admin");
