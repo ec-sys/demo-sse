@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Notifications</title>
+    <script>
+        let subscribe = function() {
+            let eventSource = new EventSource('http://localhost:8080/new_notification');
+
+            eventSource.onmessage = function(e) {
+                let notification = JSON.parse(e.data);
+                document.getElementById("notificationDiv").innerHTML += notification.text + " at " + new Date(notification.time) + "<br/>";
+            };
+        }
+        window.onload = subscribe;
+        window.onbeforeunload = function() {
+            eventSource.close();
+        }
+    </script>
+</head>
+<body>
+<h1>Notifications: </h1>
+<div id="notificationDiv"></div>
+</body>
+</html>

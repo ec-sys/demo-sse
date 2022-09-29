@@ -1,4 +1,4 @@
-package com.demo.sse.server.controller;
+package com.demo.sse.server.controller.rest;
 
 import com.demo.sse.server.core.publisher.WiredDataChangeEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
