@@ -1,6 +1,5 @@
 package com.demo.sse.server.core.event;
 
-import lombok.Data;
 import org.springframework.context.ApplicationEvent;
 
 public class WiredDataChangeEvent extends ApplicationEvent {

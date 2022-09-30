@@ -9,4 +9,9 @@ public class HomeController {
     public String index() {
         return "index";
     }
+
+    @RequestMapping(value = "/csv")
+    public String csv() {
+        return "csv";
+    }
 }

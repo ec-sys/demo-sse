@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Csv</title>
+</head>
+<body>
+<div>
+    <input id="txt_office_id" type="text" />
+    <br>
+    <input type="button" value="Download Csv" onclick="downloadCsv();" style="margin: 20px 0px;"/>
+    <br>
+    <label id="csv_url"></label>
+</div>
+</body>
+<script>
+    let officeUserId;
+    function downloadCsv() {
+        officeUserId = document.getElementById("txt_office_id").value;
+        subscribe();
+    }
+
+    let subscribe = function() {
+        // let downloadUrl = 'http://localhost:8080/api/csv/download?officeUserId=' + officeUserId;
+        let downloadUrl = 'http://localhost:8080/api/new_notification';
+        console.log(downloadUrl);
+
+        let eventSource = new EventSource(downloadUrl);
+        eventSource.onmessage = function(e) {
+            let notification = JSON.parse(e.data);
+            console.log(notification);
+        };
+    }
+</script>
+</html>

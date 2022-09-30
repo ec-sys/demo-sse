@@ -4,21 +4,34 @@
     <title>Job Notifications</title>
     <script>
         let subscribe = function() {
-            let eventSource = new EventSource('http://localhost:8080/new_notification');
+            let eventSource = new EventSource('http://localhost:8080/api/new_notification');
 
             eventSource.onmessage = function(e) {
                 let notification = JSON.parse(e.data);
                 document.getElementById("notificationDiv").innerHTML += notification.text + " at " + new Date(notification.time) + "<br/>";
+                eventSource.close();
             };
         }
-        window.onload = subscribe;
-        window.onbeforeunload = function() {
-            eventSource.close();
+        function sendNotification() {
+            let url = "http://localhost:8080/api/send_notification";
+            subscribe();
+            console.log(httpGet(url));
+        }
+
+        function httpGet(theUrl)
+        {
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+            xmlHttp.send( null );
+            return xmlHttp.responseText;
         }
     </script>
 </head>
 <body>
 <h1>Notifications: </h1>
+<div>
+    <input type="button" onclick="sendNotification();" value="Send">
+</div>
 <div id="notificationDiv"></div>
 </body>
 </html>

@@ -1,12 +1,9 @@
 package com.demo.sse.server.core.listener;
 
-import com.demo.sse.server.core.event.CustomSpringEvent;
 import com.demo.sse.server.core.event.WiredDataChangeEvent;
 import com.demo.sse.server.model.Grade;
 import com.demo.sse.server.model.Office;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;

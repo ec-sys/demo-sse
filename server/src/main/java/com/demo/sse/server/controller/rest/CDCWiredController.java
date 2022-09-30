@@ -1,7 +1,9 @@
 package com.demo.sse.server.controller.rest;
 
 import com.demo.sse.server.core.publisher.WiredDataChangeEventPublisher;
+import com.demo.sse.server.model.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,6 +21,9 @@ public class CDCWiredController {
     @Autowired
     WiredDataChangeEventPublisher cdcWiredPublisher;
 
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+
     @GetMapping("/api/cdc/publisher")
     @ResponseBody
     public String addFoo(@RequestParam String dbName, @RequestParam String collectionName) {
@@ -25,7 +31,7 @@ public class CDCWiredController {
         return "DONE - " + dbName + "-" + collectionName;
     }
 
-    @GetMapping("/stream-sse-mvc")
+    @GetMapping("/api/stream-sse-mvc")
     public SseEmitter streamSseMvc() {
         SseEmitter emitter = new SseEmitter();
         ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
@@ -44,5 +50,14 @@ public class CDCWiredController {
             }
         });
         return emitter;
+    }
+
+    @GetMapping("/api/push-notify")
+    @ResponseBody
+    public String pushNotify() {
+        Integer jobId = Notification.getNextJobId();
+        Notification nStarted = new Notification("Job No. " + jobId + " started.", new Date());
+        eventPublisher.publishEvent(nStarted);
+        return "DONE - " + jobId;
     }
 }

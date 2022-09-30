@@ -1,4 +1,5 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://root:password123@localhost:27020/registration?authSource=admin
+#      uri: mongodb://root:password123@localhost:27020/registration?authSource=admin
+      uri: mongodb://localhost:27017/registration?authSource=admin
