@@ -56,6 +56,7 @@ public class NotificationController {
                 log.info("notification : {}" + notification);
                 emitter.send(notification);
             } catch (Exception e) {
+                e.printStackTrace();
                 deadEmitters.add(emitter);
             }
         });
