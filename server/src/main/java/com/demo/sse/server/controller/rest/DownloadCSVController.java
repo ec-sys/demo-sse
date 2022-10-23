@@ -20,37 +20,45 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public class DownloadCSVController {
 
-//    private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-//
-//    @Autowired
-//    DownloadCSVService downloadCSVService;
-//
-//    @GetMapping("/api/csv/download")
-//    public SseEmitter downloadCSV(@RequestParam String officeUserId) throws Exception {
-//        downloadCSVService.downloadCsv(officeUserId);
-//
-//        SseEmitter emitter = new SseEmitter();
-//        this.emitters.add(emitter);
-//
-//        emitter.onCompletion(() -> this.emitters.remove(emitter));
-//        emitter.onTimeout(() -> {
-//            emitter.complete();
-//            this.emitters.remove(emitter);
-//        });
-//
-//        return emitter;
-//    }
-//
-//    @EventListener
-//    public void onNotification(Notification notification) {
-//        List<SseEmitter> deadEmitters = new ArrayList<>();
-//        this.emitters.forEach(emitter -> {
-//            try {
-//                emitter.send(notification);
-//            } catch (Exception e) {
-//                deadEmitters.add(emitter);
-//            }
-//        });
-//        this.emitters.remove(deadEmitters);
-//    }
+    private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+
+    @Autowired
+    DownloadCSVService downloadCSVService;
+
+    @GetMapping("/api/csv/register-client")
+    public SseEmitter registerClient() throws Exception {
+        SseEmitter emitter = new SseEmitter();
+        this.emitters.add(emitter);
+
+        emitter.onCompletion(() -> {
+            this.emitters.remove(emitter);
+            log.debug("completed {}", emitter.toString());
+        });
+        emitter.onTimeout(() -> {
+            log.debug("timeout {}", emitter.toString());
+            emitter.complete();
+            this.emitters.remove(emitter);
+        });
+
+        return emitter;
+    }
+
+    @GetMapping("/api/csv/download")
+    public String downloadCSV(@RequestParam String fileId) throws Exception {
+        downloadCSVService.downloadCsv(fileId);
+        return "Downloading file " + fileId;
+    }
+
+    @EventListener
+    public void handleDownloadCSVDoneEvent(DownloadCSVDoneEvent notification) {
+        List<SseEmitter> deadEmitters = new ArrayList<>();
+        this.emitters.forEach(emitter -> {
+            try {
+                emitter.send(notification);
+            } catch (Exception e) {
+                deadEmitters.add(emitter);
+            }
+        });
+        this.emitters.remove(deadEmitters);
+    }
 }

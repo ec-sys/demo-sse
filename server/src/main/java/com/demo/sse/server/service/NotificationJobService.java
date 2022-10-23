@@ -36,7 +36,7 @@ public class NotificationJobService {
         log.info(nStarted.getText());
         this.eventPublisher.publishEvent(nStarted);
 
-        Thread.sleep(2000);
+        Thread.sleep(5000);
 
         Notification nFinished = new Notification("Job No. " + jobId + " finished.", new Date());
         log.info(nFinished.getText());

@@ -9,12 +9,17 @@
             eventSource.onmessage = function(e) {
                 let notification = JSON.parse(e.data);
                 document.getElementById("notificationDiv").innerHTML += notification.text + " at " + new Date(notification.time) + "<br/>";
-                eventSource.close();
+                // console.log(eventSource.eventSource);
+                // eventSource.close();
+                // console.log(eventSource.eventSource);
             };
         }
+        document.addEventListener("DOMContentLoaded", function(event) {
+            subscribe();
+        });
         function sendNotification() {
             let url = "http://localhost:8080/api/send_notification";
-            subscribe();
+            //subscribe();
             console.log(httpGet(url));
         }
 

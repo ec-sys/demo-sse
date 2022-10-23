@@ -19,16 +19,34 @@
         subscribe();
     }
 
-    let subscribe = function() {
-        // let downloadUrl = 'http://localhost:8080/api/csv/download?officeUserId=' + officeUserId;
-        let downloadUrl = 'http://localhost:8080/api/new_notification';
-        console.log(downloadUrl);
+    var csvEventSource;
+    function subscribe() {
+        if(csvEventSource == undefined || csvEventSource.readyState !== 1) {
+            csvEventSource = new EventSource('http://localhost:8080/api/csv/register-client');
+            csvEventSource.onmessage = function(e) {
+                let notification = JSON.parse(e.data);
+                console.log(notification);
+            };
 
-        let eventSource = new EventSource(downloadUrl);
-        eventSource.onmessage = function(e) {
-            let notification = JSON.parse(e.data);
-            console.log(notification);
-        };
+            csvEventSource.onopen = (e) => {
+                console.log(csvEventSource.readyState);
+                downloadFile();
+            }
+        } else {
+            downloadFile();
+        }
+    }
+
+    function downloadFile() {
+        let downloadUrl = 'http://localhost:8080/api/csv/download?fileId=' + (new Date()).getTime();
+        httpGet(downloadUrl);
+    }
+
+    function httpGet(theUrl) {
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
     }
 </script>
 </html>
