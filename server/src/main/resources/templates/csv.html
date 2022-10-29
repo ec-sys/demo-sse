@@ -18,28 +18,72 @@
         officeUserId = document.getElementById("txt_office_id").value;
         subscribe();
     }
+    let arrCsvRequest = [];
+    const STATUS_READY = "READY";
+    const STATUS_PENDING = "PENDING";
+    const STATUS_DONE = "DONE";
 
     var csvEventSource;
+    let myInterval;
     function subscribe() {
-        if(csvEventSource == undefined || csvEventSource.readyState !== 1) {
+        if(csvEventSource == undefined) {
+            console.log("csvEventSource init");
+
             csvEventSource = new EventSource('http://localhost:8080/api/csv/register-client');
             csvEventSource.onmessage = function(e) {
                 let notification = JSON.parse(e.data);
                 console.log(notification);
             };
 
-            csvEventSource.onopen = (e) => {
-                console.log(csvEventSource.readyState);
-                downloadFile();
-            }
-        } else {
+            // csvEventSource.onopen = (e) => {
+            //     console.log("onopen : " + csvEventSource.readyState);
+            //     setTimeout(() => {
+            //         console.log("setTimeout : " + csvEventSource.readyState);
+            //         arrCsvRequest.forEach(item => {
+            //             if(STATUS_PENDING == item.status) {
+            //                 item.status = STATUS_READY;
+            //                 downloadFile(item.fileId);
+            //             }
+            //         });
+            //     }, 1000);
+            // }
+
+            // setTimeout(downloadFile, 1000);
+            myInterval = setInterval(() => {
+                arrCsvRequest.forEach(item => {
+                    if(STATUS_PENDING == item.status) {
+                        item.status = STATUS_READY;
+                        downloadFile(item.fileId);
+                    }
+                });
+            }, 200);
+            pushRequestDownload();
+        } else if(csvEventSource.readyState == 0) {
             downloadFile();
+        } else {
+            console.log("else : " + csvEventSource.readyState);
+            pushRequestDownload();
         }
     }
 
-    function downloadFile() {
-        let downloadUrl = 'http://localhost:8080/api/csv/download?fileId=' + (new Date()).getTime();
-        httpGet(downloadUrl);
+    function downloadFile(fileId) {
+        if(fileId == undefined) {
+            fileId = (new Date()).getTime().toString();
+        }
+        fileId = fileId + "_" + csvEventSource.readyState;
+        let downloadUrl = 'http://localhost:8080/api/csv/download?fileId=' + fileId;
+        arrCsvRequest.push({
+            fileId: fileId,
+            status: STATUS_READY
+        })
+        console.log(httpGet(downloadUrl));
+    }
+
+    function pushRequestDownload() {
+        arrCsvRequest.push({
+            fileId: (new Date()).getTime().toString(),
+            status: STATUS_PENDING
+        })
     }
 
     function httpGet(theUrl) {

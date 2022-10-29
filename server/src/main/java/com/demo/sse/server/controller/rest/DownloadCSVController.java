@@ -27,19 +27,22 @@ public class DownloadCSVController {
 
     @GetMapping("/api/csv/register-client")
     public SseEmitter registerClient() throws Exception {
+        log.info("start register client : {}", emitters.size());
         SseEmitter emitter = new SseEmitter();
         this.emitters.add(emitter);
 
+//        log.info("timeout {}", emitter.getTimeout());
         emitter.onCompletion(() -> {
-            this.emitters.remove(emitter);
-            log.debug("completed {}", emitter.toString());
+//            this.emitters.remove(emitter);
+            log.info("completed {}", emitter.getTimeout());
         });
         emitter.onTimeout(() -> {
-            log.debug("timeout {}", emitter.toString());
+            log.info("timeout {}", emitter.getTimeout());
             emitter.complete();
             this.emitters.remove(emitter);
         });
 
+        log.info("end register client");
         return emitter;
     }
 
@@ -52,6 +55,7 @@ public class DownloadCSVController {
     @EventListener
     public void handleDownloadCSVDoneEvent(DownloadCSVDoneEvent notification) {
         List<SseEmitter> deadEmitters = new ArrayList<>();
+        log.info("download csv : {}", emitters.size());
         this.emitters.forEach(emitter -> {
             try {
                 emitter.send(notification);
